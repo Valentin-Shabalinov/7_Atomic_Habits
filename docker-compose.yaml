@@ -1,52 +1,66 @@
 version: '3'
 
 services:
-  db:
-    container_name: catalog1
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: test_db
-
-    ports:
-      - "5433:5432"
-
-
-  pgdb:
-    container_name: catalog
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "5051:80"
-
 
   redis:
     image: redis
+    container_name: redis
     ports:
-      - 6379:6379
-    command: redis-server --appendonly yes
+      - '6379:6379'
 
-  celery:
+  db:
+    image: postgres
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
     build: .
-    command: celery -A config worker --loglevel=info
+    container_name: app
+    environment:
+      - .env
+    tty: true
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    environment:
+      - .env
+    tty: true
+    command: celery -A config worker -l INFO
     depends_on:
       - redis
-      - django
+      - app
 
-  celery-beat:
+  celery_beat:
     build: .
+    container_name: celery_beat
+    environment:
+      - .env
+    restart: always
+    tty: true
     command: celery -A config beat -l INFO -S django
     depends_on:
       - redis
-      - django
-    restart: on-failure
-    
-  
+      - app
 
 volumes:
-  pgdbdata: null
+  pg_data:
