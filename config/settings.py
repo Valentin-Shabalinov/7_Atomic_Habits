@@ -18,10 +18,10 @@ import dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 dot_env = os.path.join(BASE_DIR, '.env')
 dotenv.load_dotenv()
-#load_dotenv(dotenv_path=dot_env)
+# load_dotenv(dotenv_path=dot_env)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #
-#load_dotenv(BASE_DIR / '.env')
+# load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -97,9 +97,11 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DATABASES_HOST'),
+        'HOST': 'localhost',
+        'PORT': 5434,
     }
 }
+
 
 
 # Password validation
