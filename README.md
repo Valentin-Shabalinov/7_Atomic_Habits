@@ -7,7 +7,7 @@
 - Установить зависимости pip install -r requirements.txt
 - Создать файл .env, заполнить его данными из файла env.sample
 - Создать базу данных в PostreSQL CREATE DATABASE drf_course_7
-- Создать python manage.py makemigrate и применить миграции python manage.py migrate
+- Создать python manage.py makemigrations и применить миграции python manage.py migrate
 - Создать пользователя командой python manage.py csu
 - Создать пользователя командой python manage.py user_create
 - Установить и запустить Redis локально (на Windows)
@@ -123,4 +123,3 @@
 Собрать образ командой docker-compose build
 Запустить контейнеры командой docker-compose up
 Либо docker-compose up -d --build
-
